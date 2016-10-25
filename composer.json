@@ -1,0 +1,33 @@
+{
+	"name": "gacek85/middleware",
+	"description": "PHP middleware library",
+	"authors": [
+		{
+			"name": "Maciej Garycki",
+			"email": "maciekgarycki@gmail.com"
+		}
+	],
+	
+	"require": {
+		"php": ">=7.0",
+		"filp/whoops": "~2.1"
+	},
+	"require-dev": {
+		"phpunit/phpunit": "~5.5.0",
+        "fzaninotto/Faker": "~1.6.0"
+	},
+    "config": {
+        "bin-dir": "bin/"
+    },
+	"autoload": {
+		"psr-4": {
+			"Gacek85\\Middleware\\": "src/Middleware/"
+		}
+	},
+    "autoload-dev": {
+        "psr-4": {
+            "Gacek85\\Middleware\\Test\\": "test/Middleware/Test/"
+        }
+    },
+	"minimum-stability": "dev"
+}
