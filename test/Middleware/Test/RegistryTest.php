@@ -1,6 +1,7 @@
 <?php
 namespace Gacek85\Middleware\Test;
 
+use Gacek85\Middleware\AbstractMiddleware;
 use Gacek85\Middleware\Context;
 use Gacek85\Middleware\ContextInterface;
 use Gacek85\Middleware\Registry;
@@ -60,21 +61,42 @@ class RegistryTest extends AbstractMiddlewareAwareTest
         });
         
         $this->registry->remove(2);
-//        $this->registry->insert(2, function(ContextInterface $context, callable $next){
-//            $this->counter++;
-//            $this->assertTrue(is_callable($next));
-//            $this->assertTrue($context->has('s3'));
-//            $this->assertEquals('v3', $context->get('s3'));
-//            
-//            return 'final value';
-//        });
+        $this->registry->insert(2, $this->getAbstractMiddlewareImplementation());
+        $this->registry->insert(3, function(ContextInterface $context, callable $next){
+            $this->counter++;
+            $this->assertTrue(is_callable($next));
+            $this->assertTrue($context->has('s3'));
+            $this->assertTrue($context->has('s4'));
+            $this->assertEquals('v3', $context->get('s3'));
+            $this->assertEquals('v4', $context->get('s4'));
+            
+            return 'final value';
+        });
         
-        $this->assertEquals(2, $this->registry->count());
-        
+        $this->assertEquals(4, $this->registry->count());
         
         $this->resetCounter();
         $value = $this->registry->execute(new Context());
-        $this->assertEquals(2, $this->counter);
+        $this->assertEquals(3, $this->counter);
         $this->assertEquals('final value', $value);
+    }
+    
+    
+    protected function getAbstractMiddlewareImplementation()
+    {
+        return new class extends AbstractMiddleware 
+        {
+            /**
+             * Executes middleware against context and next middleware item
+             * 
+             * @param       ContextInterface        $context
+             * @return      mixed
+             */
+            protected function execute(ContextInterface $context, callable $next)
+            {
+                $context->set('s4', 'v4');
+                return call_user_func($next, $context);
+            }
+        };
     }
 }

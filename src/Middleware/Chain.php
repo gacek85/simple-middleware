@@ -20,7 +20,7 @@ class Chain extends SplStack implements ExecutableInterface
      */
     public function __construct(array $middlewares)
     {
-        $this->doConstruct($middlewares);
+        $this->doConstruct(array_reverse($middlewares));
     }
     
     
@@ -28,12 +28,12 @@ class Chain extends SplStack implements ExecutableInterface
     {
         $this[] = $this->getTerminator();
 
-        while ($callable = array_pop($middlewares)) {
+        array_map(function (callable $callable) {
             $next = $this->top();
             $this[] = function (ContextInterface $context) use ($callable, $next) {
                 return call_user_func($callable, $context, $next);
             };
-        }
+        }, $middlewares);
     }
     
     protected function getTerminator(): callable 

@@ -26,6 +26,7 @@ abstract class AbstractMiddleware
      * Executes middleware against context and next middleware item
      * 
      * @param       ContextInterface        $context
+     * @return      mixed
      */
     abstract protected function execute(ContextInterface $context, callable $next);
 }
